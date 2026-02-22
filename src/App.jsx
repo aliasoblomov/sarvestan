@@ -132,7 +132,7 @@ function App() {
 
         <div className="header-actions">
           {/* Desktop Search */}
-          <div className="search-mini desktop-only">
+          <form className="search-mini desktop-only" onSubmit={(e) => e.preventDefault()}>
             <Search size={16} />
             <input
               type="text"
@@ -142,7 +142,7 @@ function App() {
               onFocus={() => setIsPaused(true)}
               onBlur={() => setIsPaused(false)}
             />
-          </div>
+          </form>
 
           <a href={EXPORT_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary desktop-only">
             <Download size={16} /> <span>لیست نشانی‌ها</span>
@@ -194,7 +194,7 @@ function App() {
 
         {/* Mobile Search Dropdown */}
         {mobileSearchOpen && (
-          <div className="mobile-search-dropdown mobile-only">
+          <form className="mobile-search-dropdown mobile-only" onSubmit={(e) => e.preventDefault()}>
             <Search size={18} />
             <input
               autoFocus
@@ -205,7 +205,7 @@ function App() {
               onFocus={() => setIsPaused(true)}
               onBlur={() => setIsPaused(false)}
             />
-          </div>
+          </form>
         )}
 
         {/* Mobile Hamburger Menu Content */}

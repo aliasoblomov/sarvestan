@@ -2,6 +2,8 @@
 body,
 html {
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 .app-layout {
@@ -10,22 +12,33 @@ html {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Base background image - Fixed correctly for iOS */
+.app-layout::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background-image: url('https://i.ibb.co/4vQry0S/download-2.jpg');
   background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  background-position: center center;
+  z-index: -2;
+  will-change: transform;
 }
 
 /* Very subtle overlay to keep the background visible but readable */
-.app-layout::before {
+.app-layout::after {
   content: '';
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.30);
-  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.40);
+  z-index: -1;
   pointer-events: none;
 }
 
@@ -36,15 +49,20 @@ html {
 
 /* Header & Controls bar */
 .top-bar {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 1.5rem;
-  z-index: 20;
+  padding: 1rem 1.5rem;
+  z-index: 50;
+  background: rgba(8, 8, 8, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .brand {
@@ -196,10 +214,10 @@ html {
 .main-stage {
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 5;
-  padding: 8.5rem 2rem 2rem 2rem;
+  padding: 10rem 2rem 4rem 2rem;
   /* Added top padding to avoid header overlap generally */
 }
 
@@ -461,7 +479,7 @@ html {
   }
 
   .top-bar {
-    padding: 1rem;
+    padding: 0.8rem 1rem;
     align-items: center;
   }
 
@@ -566,7 +584,7 @@ html {
   }
 
   .main-stage {
-    padding: 8.5rem 1rem 3rem 1rem;
+    padding: 8rem 1rem 4rem 1rem;
     align-items: flex-start;
   }
 
