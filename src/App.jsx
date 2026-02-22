@@ -1,0 +1,315 @@
+import { useState, useEffect, useRef } from 'react';
+import Papa from 'papaparse';
+import { Search, Download, Edit3, MapPin, Calendar } from 'lucide-react';
+import './App.css';
+
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1FYmISvIqShClvASdrLkw6B0K0o77wyoClk-J5PxBt-o/export?format=csv&id=1FYmISvIqShClvASdrLkw6B0K0o77wyoClk-J5PxBt-o&gid=0';
+const FORM_LINK = 'https://forms.google.com/your-form-link';
+const MAPS_LINK = 'https://goo.gl/maps/Qte327BeheshtZahra';
+const CALENDAR_LINK = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=%DB%8C%D8%A7%D8%AF%D9%85%D8%A7%D9%86%D9%90+%D8%AC%D8%A7%D9%88%DB%8C%D8%AF%D9%86%D8%A7%D9%85%D8%A7%D9%86&details=%D9%85%DB%8C%D8%B9%D8%A7%D8%AF%DA%AF%D8%A7%D9%87%DB%8C+%D8%A8%D8%B1%D8%A7%DB%8C+%D8%AA%D8%AC%D8%AF%DB%8C%D8%AF+%D8%B9%D9%87%D8%AF+%D8%A8%D8%A7+%D8%AE%D8%A7%D9%81%D9%88%D8%A7%D8%AF%D9%87%E2%80%8C%D9%87%D8%A7%DB%8C+%D8%B3%D8%B1%D8%A7%D9%81%D8%B1%D8%A7%D8%B2+%D9%88+%D8%B2%D9%86%D8%AF%D9%87+%D9%86%DA%AF%D9%87+%D8%AF%D8%A7%D8%B3%D8%AA%D9%86+%DB%8C%D8%A7%D8%AF+%D8%AC%D8%A7%D9%88%DB%8C%D8%AF%D9%86%D8%A7%D9%85%D8%A7%D9%86+%D9%88+%D8%AC%D8%A7%D9%81+%D9%81%D8%AF%D8%A7%DB%8C%D8%A7%D9%86+%D8%B1%D8%A7%D9%87+%D9%85%DB%8C%D9%87%D9%86.+%D8%AC%D9%85%D8%B9%D9%87%E2%80%8C%D9%87%D8%A7%D8%8C+%DB%8C%D8%A7%D8%AF%D9%85%D8%A7%D9%86%D9%90+%D8%A2%D9%86%D8%A7%D9%86+%DA%A9%D9%87+%D9%85%D8%A7%D9%86%D8%AF%DA%AF%D8%A7%D8%B1+%D8%B4%D8%AF%D9%86%D8%AF.&location=%D8%A8%D9%87%D8%B4%D8%AA+%D8%B2%D9%87%D8%B1%D8%A7%D8%8C+%D8%AA%D9%87%D8%B1%D8%A7%D9%86%D8%8C+%D9%82%D8%B7%D8%B1%D9%87+%DB%B3%DB%B2%DB%B7&dates=20260227T100000/20260227T110000&recur=RRULE:FREQ%3DWEEKLY%3BBYDAY%3DFR&ctz=Asia/Tehran';
+
+const ROTATION_INTERVAL_MS = 6000; // 6 seconds per card
+
+function App() {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // State for scorecard rotation
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const progressIntervalRef = useRef(null);
+
+  // State for mobile menu
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        Papa.parse(SHEET_CSV_URL, {
+          download: true,
+          header: true,
+          complete: (results) => {
+            const validData = results.data.filter(
+              row => row['جاویدنام'] || row['یادگار / کلام'] || row['قطعه']
+            );
+            setData(validData);
+            setLoading(false);
+          },
+          error: (err) => {
+            console.error('Error parsing CSV:', err);
+            setError('خطا در دریافت اطلاعات.');
+            setLoading(false);
+          }
+        });
+      } catch (err) {
+        setError('خطای غیرمنتظره در دریافت اطلاعات.');
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Filter data
+  const filteredData = data.filter(item => {
+    const term = searchTerm.toLowerCase();
+    return (
+      (item['جاویدنام'] && item['جاویدنام'].toLowerCase().includes(term)) ||
+      (item['یادگار / کلام'] && item['یادگار / کلام'].toLowerCase().includes(term)) ||
+      (item['قطعه'] && item['قطعه'].toLowerCase().includes(term))
+    );
+  });
+
+  // Handle Scorecard Rotation
+  useEffect(() => {
+    if (loading || filteredData.length === 0 || isPaused || searchTerm.length > 0) {
+      // Stop rotation if searching or paused
+      setProgress(0);
+      return;
+    }
+
+    // Reset progress when index changes
+    setProgress(0);
+    const startTime = Date.now();
+
+    // Animate progress bar
+    progressIntervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const newProgress = Math.min((elapsed / ROTATION_INTERVAL_MS) * 100, 100);
+      setProgress(newProgress);
+
+      if (newProgress >= 100) {
+        setCurrentIndex(prev => (prev + 1) % filteredData.length);
+      }
+    }, 50);
+
+    return () => clearInterval(progressIntervalRef.current);
+  }, [currentIndex, filteredData.length, loading, isPaused, searchTerm]);
+
+  // Adjust current index if we filter out the current item
+  useEffect(() => {
+    if (filteredData.length > 0 && currentIndex >= filteredData.length) {
+      setCurrentIndex(0);
+    }
+  }, [filteredData.length, currentIndex]);
+
+  // PDF Export Link
+  const EXPORT_URL = 'https://docs.google.com/spreadsheets/d/1FYmISvIqShClvASdrLkw6B0K0o77wyoClk-J5PxBt-o/export?format=pdf&gid=0&size=A4&portrait=true&fitw=true&top_margin=0.25&bottom_margin=0.25&left_margin=0.25&right_margin=0.25&sheetnames=true&printtitle=true&pagenumbers=false&pagenum=UNDEFINED&attachment=true';
+
+  const getImageUrl = (person) => {
+    // Find a property that looks like a URL (since the column name might be anything)
+    const imgKey = Object.keys(person).find(k =>
+      person[k] && person[k].toString().startsWith('http')
+    );
+    return imgKey ? person[imgKey] : null;
+  };
+
+  const currentPerson = filteredData[currentIndex];
+  const imageUrl = currentPerson ? getImageUrl(currentPerson) : null;
+
+  return (
+    <div className="app-layout">
+      {/* Background Cedar Graphic */}
+      <div className="cedar-bg"></div>
+
+      {/* Top Navigation */}
+      <header className="top-bar">
+        <div className="brand">
+          <div className="brand-header">
+            <img src="https://i.ibb.co/LzSWF0kW/output-onlinepngtools.png" alt="نشانی سرو" className="brand-logo" />
+            <div className="brand-title">نشانی مزار جاویدنامان</div>
+          </div>
+          <div className="brand-poem">
+            ساحت گور تو <span className="sarv">سروستان</span> شد،<br />
+            ای عزیز دل من، تو کدامین <span className="sarv">سروی؟</span>
+          </div>
+        </div>
+
+        <div className="header-actions">
+          {/* Desktop Search */}
+          <div className="search-mini desktop-only">
+            <Search size={16} />
+            <input
+              type="text"
+              placeholder="جستجو..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onFocus={() => setIsPaused(true)}
+              onBlur={() => setIsPaused(false)}
+            />
+          </div>
+
+          <a href={EXPORT_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary desktop-only">
+            <Download size={16} /> <span>لیست نشانی‌ها</span>
+          </a>
+
+          <a href={FORM_LINK} target="_blank" rel="noopener noreferrer" className="btn btn-secondary desktop-only">
+            <Edit3 size={16} /> <span>افزودن/ویرایش نشانی</span>
+          </a>
+
+          <a href={MAPS_LINK} target="_blank" rel="noopener noreferrer" className="btn btn-secondary desktop-only">
+            <MapPin size={16} /> <span>مسیریابی</span>
+          </a>
+
+          <a href={CALENDAR_LINK} target="_blank" rel="noopener noreferrer" className="btn btn-secondary desktop-only text-gold">
+            <Calendar size={16} /> <span>افزودن به تقویم</span>
+          </a>
+
+          {/* Mobile Header Icons */}
+          <button
+            className="icon-btn mobile-only"
+            onClick={() => {
+              setMobileSearchOpen(!mobileSearchOpen);
+              setMenuOpen(false);
+            }}
+            aria-label="Search"
+          >
+            <Search size={24} />
+          </button>
+
+          <a href={EXPORT_URL} target="_blank" rel="noopener noreferrer" className="icon-btn mobile-only" aria-label="Download">
+            <Download size={24} />
+          </a>
+
+          <button
+            className="mobile-menu-toggle mobile-only"
+            onClick={() => {
+              setMenuOpen(!menuOpen);
+              setMobileSearchOpen(false);
+            }}
+            aria-label="Toggle Menu"
+          >
+            <div className={`hamburger ${menuOpen ? 'open' : ''}`}>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </button>
+        </div>
+
+        {/* Mobile Search Dropdown */}
+        {mobileSearchOpen && (
+          <div className="mobile-search-dropdown mobile-only">
+            <Search size={18} />
+            <input
+              autoFocus
+              type="text"
+              placeholder="جستجوی نام، قطعه، یادگار..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onFocus={() => setIsPaused(true)}
+              onBlur={() => setIsPaused(false)}
+            />
+          </div>
+        )}
+
+        {/* Mobile Hamburger Menu Content */}
+        <div className={`controls-mobile mobile-only ${menuOpen ? 'controls-open' : ''}`}>
+          <a href="#" className="mobile-menu-item" onClick={(e) => {
+            e.preventDefault();
+            setMobileSearchOpen(true);
+            setMenuOpen(false);
+          }}>
+            <Search size={18} /> <span>جستجو</span>
+          </a>
+
+          <a href={EXPORT_URL} target="_blank" rel="noopener noreferrer" className="mobile-menu-item">
+            <Download size={18} /> <span>دانلود لیست نشانی‌ها</span>
+          </a>
+
+          <a href={CALENDAR_LINK} target="_blank" rel="noopener noreferrer" className="mobile-menu-item text-gold">
+            <Calendar size={18} /> <span>افزودن به تقویم جمعه‌ها</span>
+          </a>
+
+          <a href={FORM_LINK} target="_blank" rel="noopener noreferrer" className="mobile-menu-item">
+            <Edit3 size={18} /> <span>افزودن/ویرایش نشانی</span>
+          </a>
+
+          <a href={MAPS_LINK} target="_blank" rel="noopener noreferrer" className="mobile-menu-item">
+            <MapPin size={18} /> <span>مسیریابی بهشت زهرا</span>
+          </a>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="main-stage">
+        {loading ? (
+          <div className="centered-state">
+            <div className="spinner"></div>
+            <p className="mt-4">در حال بازخوانی...</p>
+          </div>
+        ) : error ? (
+          <div className="centered-state text-red">
+            <p>{error}</p>
+          </div>
+        ) : filteredData.length === 0 ? (
+          <div className="centered-state">
+            <p>سروی یافت نشد.</p>
+          </div>
+        ) : (
+          <div
+            className="scorecard-wrapper animate-slide-up"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => {
+              if (searchTerm.length === 0) setIsPaused(false);
+            }}
+          >
+            <div className="scorecard" key={currentIndex}>
+              <div className="scorecard-image">
+                {imageUrl ? (
+                  <img src={imageUrl} alt={currentPerson['جاویدنام']} />
+                ) : (
+                  <div className="image-fallback">
+                    <span style={{ opacity: 0.3 }}>بدون تصویر</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="scorecard-content">
+                <div className="scorecard-pre">فرزند ایران و جان فدای میهن</div>
+                <h2 className="scorecard-name">{currentPerson['جاویدنام'] || 'جاویدنام'}</h2>
+
+                <div className="scorecard-details">
+                  <div className="detail-item">
+                    <span className="detail-label">قطعه</span>
+                    <span className="detail-val">{currentPerson['قطعه'] || '-'}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">ردیف</span>
+                    <span className="detail-val">{currentPerson['ردیف'] || '-'}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">شماره</span>
+                    <span className="detail-val">{currentPerson['شماره'] || '-'}</span>
+                  </div>
+                </div>
+
+                {currentPerson['یادگار / کلام'] && (
+                  <div className="scorecard-quote text-gold">
+                    « {currentPerson['یادگار / کلام']} »
+                  </div>
+                )}
+              </div>
+
+              {/* Progress bar at the bottom mapping the rotation time */}
+              {searchTerm.length === 0 && (
+                <div className="progress-bar-container">
+                  <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </main>
+
+      <div className="bottom-decor">نشانی سرو • یادگار جاویدان</div>
+    </div>
+  );
+}
+
+export default App;
