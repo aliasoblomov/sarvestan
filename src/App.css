@@ -1,4 +1,9 @@
 /* Full screen background layout */
+body,
+html {
+  min-height: 100vh;
+}
+
 .app-layout {
   position: relative;
   width: 100%;
@@ -194,7 +199,7 @@
   align-items: center;
   justify-content: center;
   z-index: 5;
-  padding: 8rem 2rem 2rem 2rem;
+  padding: 8.5rem 2rem 2rem 2rem;
   /* Added top padding to avoid header overlap generally */
 }
 
@@ -561,7 +566,7 @@
   }
 
   .main-stage {
-    padding: 11rem 1rem 3rem 1rem;
+    padding: 8.5rem 1rem 3rem 1rem;
     align-items: flex-start;
   }
 
