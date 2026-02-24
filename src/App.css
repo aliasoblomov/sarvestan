@@ -448,14 +448,16 @@ html {
 
 @media (max-width: 991px) {
   .top-bar {
-    padding: 0.5rem 0.6rem;
+    padding: 0.8rem 0.6rem;
+    /* Reduced horizontal padding from 1rem to 0.6rem */
     align-items: center;
     min-height: 60px;
     height: auto;
   }
 
   .brand {
-    max-width: 55%;
+    max-width: 65%;
+    /* Allowed a bit more space for the brand */
     margin-right: auto;
     justify-content: center;
     display: flex;
