@@ -1,5 +1,5 @@
 @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css');
-@import url('https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400;500;600;700&display=swap');
+/* Removed Markazi Text */
 
 :root {
   /* Colors inspired by the customized Sheet (Lion & Sun colors) */
@@ -171,7 +171,7 @@ button {
   transition: all 0.3s ease;
   gap: 0.5rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  /* Removed letter-spacing so Persian text connects properly */
 }
 
 .btn-primary {

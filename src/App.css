@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Lalezar&display=swap');
 
 /* Full screen background layout */
 body,
@@ -82,7 +82,8 @@ html {
 
 .brand-title {
   color: var(--color-gold);
-  font-family: 'Markazi Text', serif;
+  font-family: 'Lalezar', system-ui, sans-serif;
+  /* Heroic Iranian Font */
   font-size: 1.8rem;
   line-height: 1;
   /* Match the logo vertically */
@@ -336,16 +337,16 @@ html {
 .scorecard-pre {
   font-size: 0.8rem;
   color: var(--color-text-light);
-  text-transform: uppercase;
-  letter-spacing: 2px;
   margin-bottom: 0.5rem;
+  /* Removed letter-spacing which was breaking cursive Persian */
 }
 
 .scorecard-name {
-  font-family: 'Markazi Text', serif;
+  font-family: 'Lalezar', system-ui, sans-serif;
   font-size: 4.5rem;
-  font-weight: 700;
-  line-height: 1;
+  font-weight: 400;
+  /* Lalezar is naturally thick */
+  line-height: 1.1;
   color: var(--color-text);
   /* White/Light gray */
   margin-bottom: 1.25rem;
@@ -482,12 +483,8 @@ html {
     /* Make it slightly more prominent but even */
     line-height: 1;
     margin: 0;
-    padding-top: 4px;
-    /* Lower the text explicitly to match the icon optical center */
     display: flex;
     align-items: center;
-    transform: translateY(3px);
-    /* Force optical center down */
   }
 
   /* User requested: show poem under logo on mobile but smaller to save space */
@@ -496,8 +493,6 @@ html {
     font-size: 0.8rem;
     line-height: 1.5;
     margin-top: 0;
-    transform: translateY(3px);
-    /* Keep poem paired with shifted title */
   }
 
   .poem-line {
