@@ -475,15 +475,12 @@ html {
 
   .brand-title {
     font-size: 1.35rem;
-    /* Make it slightly more prominent but even */
     line-height: 1;
     margin: 0;
-    padding-top: 4px;
-    /* Lower the text explicitly to match the icon optical center */
     display: flex;
     align-items: center;
-    transform: translateY(3px);
-    /* Force optical center down */
+    transform: translateY(-2px);
+    /* Push UP to align with the leaf top of the logo */
   }
 
   /* User requested: show poem under logo on mobile but smaller to save space */
@@ -492,8 +489,7 @@ html {
     font-size: 0.8rem;
     line-height: 1.5;
     margin-top: 0;
-    transform: translateY(3px);
-    /* Keep poem paired with shifted title */
+    transform: translateY(-2px);
   }
 
   .poem-line {
