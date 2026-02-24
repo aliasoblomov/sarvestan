@@ -172,8 +172,8 @@ function App() {
             <div className="brand-title">نشانی مزار جاویدنامان</div>
           </a>
           <div className="brand-poem">
-            ساحت گور تو <span className="sarv">سروستان</span> شد،<br />
-            ای عزیز دل من، تو کدامین <span className="sarv">سروی؟</span>
+            <span className="poem-line">ساحت گور تو <span className="sarv">سروستان</span> شد، </span>
+            <span className="poem-line">ای عزیز دل من، تو کدامین <span className="sarv">سروی؟</span></span>
           </div>
         </div>
 
