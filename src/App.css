@@ -448,16 +448,18 @@ html {
 
 @media (max-width: 991px) {
   .top-bar {
-    padding: 0.8rem 1rem;
-    align-items: center;
+    padding: 0.6rem 0.75rem;
+    /* Reduced side padding so elements don't bleed into each other */
+    align-items: flex-start;
     min-height: 60px;
     height: auto;
   }
 
   .brand {
-    max-width: 60%;
+    max-width: 55%;
+    /* Limit brand width strictly so it never reaches the icons */
     margin-right: auto;
-    justify-content: center;
+    justify-content: flex-start;
     display: flex;
     flex-direction: column;
   }
@@ -510,10 +512,11 @@ html {
   }
 
   .header-actions {
-    gap: 0.75rem;
+    gap: 0.5rem;
     align-self: flex-start;
-    /* Hug the top alongside the logo, not the center of the whole bar */
     padding-top: 0.1rem;
+    flex-shrink: 0;
+    /* Never compress icons onto each other */
   }
 
   .mobile-search-dropdown {
