@@ -116,21 +116,20 @@ html {
 }
 
 /* Mobile helpers */
-@media (max-width: 767px) {
-  .d-none.d-md-inline {
+@media (max-width: 991px) {
+  .desktop-only {
     display: none !important;
   }
 }
 
-@media (min-width: 768px) {
-  .d-none.d-md-inline {
-    display: inline !important;
+@media (min-width: 992px) {
+  .mobile-only {
+    display: none !important;
   }
 }
 
 /* Mobile Hamburger Menu */
 .mobile-menu-toggle {
-  display: none;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -228,6 +227,7 @@ html {
   max-width: 800px;
   display: flex;
   justify-content: center;
+  position: relative;
 }
 
 .scorecard {
@@ -410,53 +410,6 @@ html {
   }
 }
 
-/* Bottom footer / decor */
-.bottom-decor {
-  position: absolute;
-  bottom: 1rem;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 0.7rem;
-  color: var(--color-text-light);
-  letter-spacing: 1px;
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-/* --- Mobile Responsiveness & Utilities --- */
-
-.icon-btn {
-  background: transparent;
-  border: none;
-  color: var(--color-text);
-  padding: 0.5rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.3s;
-}
-
-.icon-btn:hover {
-  color: var(--color-gold);
-}
-
-.text-gold,
-.text-gold span,
-.text-gold svg {
-  color: var(--color-gold) !important;
-  border-color: var(--color-gold) !important;
-}
-
-.desktop-only {
-  display: flex;
-}
-
-.mobile-only {
-  display: none;
-}
-
 @keyframes slideDown {
   from {
     transform: translateY(-20px);
@@ -470,14 +423,6 @@ html {
 }
 
 @media (max-width: 991px) {
-  .desktop-only {
-    display: none !important;
-  }
-
-  .mobile-only {
-    display: flex !important;
-  }
-
   .top-bar {
     padding: 0.8rem 1rem;
     align-items: center;
@@ -495,9 +440,12 @@ html {
     font-size: 1.4rem;
   }
 
+  /* User requested: show poem under logo on mobile but smaller to save space */
   .brand-poem {
-    font-size: 0.8rem;
-    line-height: 1.5;
+    display: block;
+    font-size: 0.70rem;
+    line-height: 1.3;
+    margin-top: 0.15rem;
   }
 
   .mobile-menu-toggle {
@@ -508,7 +456,6 @@ html {
     gap: 0.5rem;
   }
 
-  /* Dropdown search bar just below header */
   .mobile-search-dropdown {
     position: absolute;
     top: 100%;
@@ -578,13 +525,8 @@ html {
     border-bottom: none;
   }
 
-  .btn {
-    width: 100%;
-    justify-content: center;
-  }
-
   .main-stage {
-    padding: 8rem 1rem 4rem 1rem;
+    padding: 7rem 1rem 5rem 1rem;
     align-items: flex-start;
   }
 
@@ -595,7 +537,6 @@ html {
   .scorecard-image {
     min-height: 250px;
     height: 35vh;
-    /* Proportional fallback */
     max-height: 350px;
   }
 
@@ -614,5 +555,118 @@ html {
 
   .detail-val {
     font-size: 1.2rem;
+  }
+}
+
+/* Carousel Controls */
+.carousel-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--color-text-light);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.4s ease;
+  opacity: 0.2;
+}
+
+.carousel-nav-btn:hover {
+  opacity: 1;
+  color: var(--color-gold);
+}
+
+.carousel-nav-btn.prev-btn {
+  right: -30px;
+}
+
+.carousel-nav-btn.next-btn {
+  left: -30px;
+}
+
+@media (max-width: 767px) {
+  .carousel-nav-btn {
+    top: auto;
+    bottom: 10px;
+    transform: none;
+    width: 36px;
+    height: 36px;
+    opacity: 0.6;
+    /* Slightly more visible on bottom */
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  .carousel-nav-btn.prev-btn {
+    right: 15px;
+    /* placed on bottom right */
+  }
+
+  .carousel-nav-btn.next-btn {
+    left: 15px;
+    /* placed on bottom left */
+  }
+}
+
+/* Footer Container */
+.footer-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  pointer-events: none;
+  /* Let clicks pass through except on children */
+  z-index: 20;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+  pointer-events: auto;
+  /* enable clicks on text/links here */
+}
+
+.footer-email {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-text-light);
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-family: inherit;
+}
+
+.footer-email span {
+  font-family: monospace;
+}
+
+.footer-email:hover {
+  color: var(--color-gold);
+}
+
+@media (max-width: 767px) {
+  .footer-container {
+    padding: 0.8rem 1rem;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.7rem;
   }
 }

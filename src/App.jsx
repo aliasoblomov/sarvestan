@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import Papa from 'papaparse';
-import { Search, Download, Edit3, MapPin, Calendar } from 'lucide-react';
+import { Search, Download, Edit3, MapPin, Calendar, ChevronLeft, ChevronRight, Mail } from 'lucide-react';
 import './App.css';
 
 const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1FYmISvIqShClvASdrLkw6B0K0o77wyoClk-J5PxBt-o/export?format=csv&id=1FYmISvIqShClvASdrLkw6B0K0o77wyoClk-J5PxBt-o&gid=0';
-const FORM_LINK = 'https://forms.google.com/your-form-link';
-const MAPS_LINK = 'https://goo.gl/maps/Qte327BeheshtZahra';
+const FORM_LINK = 'https://docs.google.com/forms/d/e/1FAIpQLSdPdrIf_PTO0Wa7lMVGKHMrKvVgROIIl06NQjzC8zgbxPGFXg/viewform';
+const MAPS_LINK = 'https://maps.app.goo.gl/rywjvqfSXoCxEja19?g_st=ic';
 const CALENDAR_LINK = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=%DB%8C%D8%A7%D8%AF%D9%85%D8%A7%D9%86%D9%90+%D8%AC%D8%A7%D9%88%DB%8C%D8%AF%D9%86%D8%A7%D9%85%D8%A7%D9%86&details=%D9%85%DB%8C%D8%B9%D8%A7%D8%AF%DA%AF%D8%A7%D9%87%DB%8C+%D8%A8%D8%B1%D8%A7%DB%8C+%D8%AA%D8%AC%D8%AF%DB%8C%D8%AF+%D8%B9%D9%87%D8%AF+%D8%A8%D8%A7+%D8%AE%D8%A7%D9%81%D9%88%D8%A7%D8%AF%D9%87%E2%80%8C%D9%87%D8%A7%DB%8C+%D8%B3%D8%B1%D8%A7%D9%81%D8%B1%D8%A7%D8%B2+%D9%88+%D8%B2%D9%86%D8%AF%D9%87+%D9%86%DA%AF%D9%87+%D8%AF%D8%A7%D8%B3%D8%AA%D9%86+%DB%8C%D8%A7%D8%AF+%D8%AC%D8%A7%D9%88%DB%8C%D8%AF%D9%86%D8%A7%D9%85%D8%A7%D9%86+%D9%88+%D8%AC%D8%A7%D9%81+%D9%81%D8%AF%D8%A7%DB%8C%D8%A7%D9%86+%D8%B1%D8%A7%D9%87+%D9%85%DB%8C%D9%87%D9%86.+%D8%AC%D9%85%D8%B9%D9%87%E2%80%8C%D9%87%D8%A7%D8%8C+%DB%8C%D8%A7%D8%AF%D9%85%D8%A7%D9%86%D9%90+%D8%A2%D9%86%D8%A7%D9%86+%DA%A9%D9%87+%D9%85%D8%A7%D9%86%D8%AF%DA%AF%D8%A7%D8%B1+%D8%B4%D8%AF%D9%86%D8%AF.&location=%D8%A8%D9%87%D8%B4%D8%AA+%D8%B2%D9%87%D8%B1%D8%A7%D8%8C+%D8%AA%D9%87%D8%B1%D8%A7%D9%86%D8%8C+%D9%82%D8%B7%D8%B1%D9%87+%DB%B3%DB%B2%DB%B7&dates=20260227T100000/20260227T110000&recur=RRULE:FREQ%3DWEEKLY%3BBYDAY%3DFR&ctz=Asia/Tehran';
 
-const ROTATION_INTERVAL_MS = 6000; // 6 seconds per card
+const ROTATION_INTERVAL_MS = 9000; // 9 seconds per card
 
 function App() {
   const [data, setData] = useState([]);
@@ -37,7 +37,15 @@ function App() {
             const validData = results.data.filter(
               row => row['جاویدنام'] || row['یادگار / کلام'] || row['قطعه']
             );
-            setData(validData);
+
+            // Shuffle array
+            const shuffled = [...validData];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+
+            setData(shuffled);
             setLoading(false);
           },
           error: (err) => {
@@ -46,7 +54,8 @@ function App() {
             setLoading(false);
           }
         });
-      } catch (err) {
+      } catch (e) {
+        console.error('Fetch exception:', e);
         setError('خطای غیرمنتظره در دریافت اطلاعات.');
         setLoading(false);
       }
@@ -65,16 +74,61 @@ function App() {
     );
   });
 
+  // Carousel swipe and nav controls
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    // In RTL, left swipe goes to next, right swipe goes to prev
+    if (isLeftSwipe) {
+      handleNext();
+    } else if (isRightSwipe) {
+      handlePrev();
+    }
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => {
+      if (filteredData.length === 0) return prev;
+      return (prev + 1) % filteredData.length;
+    });
+  };
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => {
+      if (filteredData.length === 0) return prev;
+      return (prev - 1 + filteredData.length) % filteredData.length;
+    });
+  };
+
+  // Adjust current index if we filter out the current item during render
+  const safeIndex = (currentIndex >= filteredData.length && filteredData.length > 0) ? 0 : currentIndex;
+
+  if (safeIndex !== currentIndex) {
+    setCurrentIndex(safeIndex);
+  }
+
   // Handle Scorecard Rotation
   useEffect(() => {
     if (loading || filteredData.length === 0 || isPaused || searchTerm.length > 0) {
-      // Stop rotation if searching or paused
-      setProgress(0);
+      // Return early if searching or paused without setting state sync
       return;
     }
 
     // Reset progress when index changes
-    setProgress(0);
     const startTime = Date.now();
 
     // Animate progress bar
@@ -89,14 +143,7 @@ function App() {
     }, 50);
 
     return () => clearInterval(progressIntervalRef.current);
-  }, [currentIndex, filteredData.length, loading, isPaused, searchTerm]);
-
-  // Adjust current index if we filter out the current item
-  useEffect(() => {
-    if (filteredData.length > 0 && currentIndex >= filteredData.length) {
-      setCurrentIndex(0);
-    }
-  }, [filteredData.length, currentIndex]);
+  }, [safeIndex, filteredData.length, loading, isPaused, searchTerm]);
 
   // PDF Export Link
   const EXPORT_URL = 'https://docs.google.com/spreadsheets/d/1FYmISvIqShClvASdrLkw6B0K0o77wyoClk-J5PxBt-o/export?format=pdf&gid=0&size=A4&portrait=true&fitw=true&top_margin=0.25&bottom_margin=0.25&left_margin=0.25&right_margin=0.25&sheetnames=true&printtitle=true&pagenumbers=false&pagenum=UNDEFINED&attachment=true';
@@ -109,7 +156,7 @@ function App() {
     return imgKey ? person[imgKey] : null;
   };
 
-  const currentPerson = filteredData[currentIndex];
+  const currentPerson = filteredData[safeIndex];
   const imageUrl = currentPerson ? getImageUrl(currentPerson) : null;
 
   return (
@@ -144,7 +191,7 @@ function App() {
             />
           </form>
 
-          <a href={EXPORT_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary desktop-only">
+          <a href={EXPORT_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary desktop-only" style={{ border: '1px solid var(--color-gold)' }}>
             <Download size={16} /> <span>لیست نشانی‌ها</span>
           </a>
 
@@ -153,14 +200,14 @@ function App() {
           </a>
 
           <a href={MAPS_LINK} target="_blank" rel="noopener noreferrer" className="btn btn-secondary desktop-only">
-            <MapPin size={16} /> <span>مسیریابی</span>
+            <MapPin size={16} /> <span>مسیریابی به قطعه ۳۲۷</span>
           </a>
 
           <a href={CALENDAR_LINK} target="_blank" rel="noopener noreferrer" className="btn btn-secondary desktop-only text-gold">
             <Calendar size={16} /> <span>افزودن به تقویم</span>
           </a>
 
-          {/* Mobile Header Icons */}
+          {/* Mobile Header Icons - Persistent */}
           <button
             className="icon-btn mobile-only"
             onClick={() => {
@@ -169,11 +216,11 @@ function App() {
             }}
             aria-label="Search"
           >
-            <Search size={24} />
+            <Search size={22} />
           </button>
 
-          <a href={EXPORT_URL} target="_blank" rel="noopener noreferrer" className="icon-btn mobile-only" aria-label="Download">
-            <Download size={24} />
+          <a href={EXPORT_URL} target="_blank" rel="noopener noreferrer" className="icon-btn mobile-only text-gold" aria-label="Download">
+            <Download size={22} />
           </a>
 
           <button
@@ -210,18 +257,6 @@ function App() {
 
         {/* Mobile Hamburger Menu Content */}
         <div className={`controls-mobile mobile-only ${menuOpen ? 'controls-open' : ''}`}>
-          <a href="#" className="mobile-menu-item" onClick={(e) => {
-            e.preventDefault();
-            setMobileSearchOpen(true);
-            setMenuOpen(false);
-          }}>
-            <Search size={18} /> <span>جستجو</span>
-          </a>
-
-          <a href={EXPORT_URL} target="_blank" rel="noopener noreferrer" className="mobile-menu-item">
-            <Download size={18} /> <span>دانلود لیست نشانی‌ها</span>
-          </a>
-
           <a href={CALENDAR_LINK} target="_blank" rel="noopener noreferrer" className="mobile-menu-item text-gold">
             <Calendar size={18} /> <span>افزودن به تقویم جمعه‌ها</span>
           </a>
@@ -231,7 +266,7 @@ function App() {
           </a>
 
           <a href={MAPS_LINK} target="_blank" rel="noopener noreferrer" className="mobile-menu-item">
-            <MapPin size={18} /> <span>مسیریابی بهشت زهرا</span>
+            <MapPin size={18} /> <span>مسیریابی به قطعه ۳۲۷</span>
           </a>
         </div>
       </header>
@@ -258,8 +293,21 @@ function App() {
             onMouseLeave={() => {
               if (searchTerm.length === 0) setIsPaused(false);
             }}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
           >
-            <div className="scorecard" key={currentIndex}>
+            {filteredData.length > 1 && (
+              <button
+                className="carousel-nav-btn prev-btn"
+                onClick={(e) => { e.stopPropagation(); handlePrev(); }}
+                aria-label="قبلی"
+              >
+                <ChevronRight size={24} />
+              </button>
+            )}
+
+            <div className="scorecard" key={safeIndex}>
               <div className="scorecard-image">
                 {imageUrl ? (
                   <img src={imageUrl} alt={currentPerson['جاویدنام']} />
@@ -303,11 +351,28 @@ function App() {
                 </div>
               )}
             </div>
+
+            {filteredData.length > 1 && (
+              <button
+                className="carousel-nav-btn next-btn"
+                onClick={(e) => { e.stopPropagation(); handleNext(); }}
+                aria-label="بعدی"
+              >
+                <ChevronLeft size={24} />
+              </button>
+            )}
           </div>
         )}
       </main>
 
-      <div className="bottom-decor">نشانی سرو • یادگار جاویدان</div>
+      <footer className="footer-container">
+        <div className="footer-content">
+          <span>نشانی سرو • یادگار جاویدان</span>
+          <a href="mailto:sarvinfo@mail.com" className="footer-email">
+            <span dir="ltr">sarvinfo@mail.com</span> <Mail size={14} />
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }
