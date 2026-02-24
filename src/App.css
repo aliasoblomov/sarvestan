@@ -213,11 +213,13 @@ html {
 .main-stage {
   flex: 1;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  /* Center vertically on desktop by default */
   justify-content: center;
   z-index: 5;
-  padding: 10rem 2rem 4rem 2rem;
-  /* Added top padding to avoid header overlap generally */
+  padding: 6rem 2rem 4rem 2rem;
+  min-height: calc(100vh - 100px);
+  /* Ensure it takes full height minus header roughly */
 }
 
 /* Scorecard */
@@ -258,9 +260,20 @@ html {
 }
 
 @media (min-width: 992px) {
+  .scorecard-wrapper {
+    max-width: 1000px;
+    /* Make the box wider on desktop */
+  }
+
   .scorecard {
     flex-direction: row;
-    min-height: 400px;
+    min-height: 500px;
+    /* Make the box taller on desktop */
+  }
+
+  .scorecard-image {
+    flex: 0 0 40%;
+    /* Image takes up more space horizontally */
   }
 }
 
