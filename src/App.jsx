@@ -167,10 +167,10 @@ function App() {
       {/* Top Navigation */}
       <header className="top-bar">
         <div className="brand">
-          <div className="brand-header">
+          <a href="https://sarv.info/" className="brand-header" style={{ textDecoration: 'none' }}>
             <img src="https://i.ibb.co/LzSWF0kW/output-onlinepngtools.png" alt="نشانی سرو" className="brand-logo" />
             <div className="brand-title">نشانی مزار جاویدنامان</div>
-          </div>
+          </a>
           <div className="brand-poem">
             ساحت گور تو <span className="sarv">سروستان</span> شد،<br />
             ای عزیز دل من، تو کدامین <span className="sarv">سروی؟</span>
