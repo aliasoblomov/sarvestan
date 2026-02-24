@@ -93,11 +93,9 @@ html {
 
 .brand-poem {
   font-size: 0.95rem;
-  /* Slightly larger, more readable */
-  font-weight: 700;
+  font-weight: 500;
   color: #FDF5E6;
-  /* Cream/Bone white */
-  font-family: 'Courier New', Courier, monospace;
+  font-family: inherit;
   line-height: 1.8;
   margin-top: 0.2rem;
   text-shadow: 0 4px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.8);
@@ -105,8 +103,9 @@ html {
 }
 
 .brand-poem span.sarv {
-  color: var(--color-green);
-  /* Jade Green */
+  color: #a3e6a3;
+  /* Light, accessible pale green for colorblind visibility against dark bg */
+  font-weight: 700;
 }
 
 .header-actions {
