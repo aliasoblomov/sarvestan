@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&display=swap');
+
 /* Full screen background layout */
 body,
 html {
@@ -92,19 +94,19 @@ html {
 }
 
 .brand-poem {
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 500;
   color: #FDF5E6;
-  font-family: inherit;
-  line-height: 1.8;
+  font-family: 'Aref Ruqaa', 'IranNastaliq', serif;
+  line-height: 2.2;
   margin-top: 0.2rem;
   text-shadow: 0 4px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.8);
-  letter-spacing: -0.5px;
+  letter-spacing: normal;
 }
 
 .brand-poem span.sarv {
-  color: #a3e6a3;
-  /* Light, accessible pale green for colorblind visibility against dark bg */
+  color: #5dbb63;
+  /* Balanced, high-contrast Cypress green */
   font-weight: 700;
 }
 
@@ -455,8 +457,8 @@ html {
   /* User requested: show poem under logo on mobile but smaller to save space */
   .brand-poem {
     display: block;
-    font-size: 0.70rem;
-    line-height: 1.3;
+    font-size: 0.85rem;
+    line-height: 2;
     margin-top: 0.15rem;
   }
 
