@@ -458,19 +458,32 @@ html {
     max-width: 60%;
     margin-right: auto;
     justify-content: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brand-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .brand-logo {
     height: 36px;
+    margin-bottom: 2px;
   }
 
   .brand-title {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
+    /* Make it slightly more prominent but even */
     line-height: 1;
     margin: 0;
     padding-top: 4px;
+    /* Lower the text explicitly to match the icon optical center */
     display: flex;
     align-items: center;
+    transform: translateY(3px);
+    /* Force optical center down */
   }
 
   /* User requested: show poem under logo on mobile but smaller to save space */
@@ -479,6 +492,8 @@ html {
     font-size: 0.8rem;
     line-height: 1.5;
     margin-top: 0;
+    transform: translateY(3px);
+    /* Keep poem paired with shifted title */
   }
 
   .poem-line {
