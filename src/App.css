@@ -71,7 +71,7 @@ html {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  max-width: 60%;
+  /* max-width removed to prevent desktop overlapping constraints */
 }
 
 .brand-header {
@@ -123,7 +123,10 @@ html {
   align-items: center;
   gap: 1rem;
   height: 100%;
-  /* Ensure it spans the full height for alignment */
+  flex-wrap: wrap;
+  /* Allows desktop menu options to wrap neatly instead of squishing */
+  justify-content: flex-end;
+  /* Ensures options align to the left side in RTL */
 }
 
 /* Mobile helpers */
@@ -448,8 +451,8 @@ html {
 
 @media (max-width: 991px) {
   .top-bar {
-    padding: 0.8rem 0.6rem 0.8rem 0.2rem;
-    /* Reduced padding on the right side specifically to optically balance the logo against the icons on the left */
+    padding: 0.8rem 0.6rem;
+    /* Reduced horizontal padding from 1rem to 0.6rem */
     align-items: center;
     min-height: 60px;
     height: auto;
@@ -457,8 +460,7 @@ html {
 
   .brand {
     max-width: 65%;
-    /* Allowed a bit more space for the brand */
-    margin-right: auto;
+    /* margin-right: auto; -> Removed this so the logo sticks properly to the far right */
     justify-content: center;
     display: flex;
     flex-direction: column;
