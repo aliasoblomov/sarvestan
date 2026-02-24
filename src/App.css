@@ -448,8 +448,8 @@ html {
 
 @media (max-width: 991px) {
   .top-bar {
-    padding: 0.8rem 0.6rem;
-    /* Reduced horizontal padding from 1rem to 0.6rem */
+    padding: 0.8rem 0.6rem 0.8rem 0.2rem;
+    /* Reduced padding on the right side specifically to optically balance the logo against the icons on the left */
     align-items: center;
     min-height: 60px;
     height: auto;
