@@ -209,7 +209,7 @@ function App() {
 
           {/* Mobile Header Icons - Persistent */}
           <button
-            className="icon-btn mobile-only"
+            className="icon-btn mobile-only text-gold"
             onClick={() => {
               setMobileSearchOpen(!mobileSearchOpen);
               setMenuOpen(false);
@@ -257,6 +257,10 @@ function App() {
 
         {/* Mobile Hamburger Menu Content */}
         <div className={`controls-mobile mobile-only ${menuOpen ? 'controls-open' : ''}`}>
+          <a href={EXPORT_URL} target="_blank" rel="noopener noreferrer" className="mobile-menu-item" style={{ fontWeight: 'bold' }}>
+            <Download size={18} /> <span>لیست کامل نشانی‌ها</span>
+          </a>
+
           <a href={CALENDAR_LINK} target="_blank" rel="noopener noreferrer" className="mobile-menu-item text-gold">
             <Calendar size={18} /> <span>افزودن به تقویم جمعه‌ها</span>
           </a>
